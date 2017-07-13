@@ -1,7 +1,7 @@
 import bs4 as bs
 import urllib.request
 from time import sleep
-
+from datetime import datetime
 prev_t = []
 titles = {}
 artists = {}
@@ -18,27 +18,36 @@ while True:
     title = soup.find_all('span',{'class':'gmod-list-title'})
     artist = soup.find_all('span',{'class':'gmod-list-metadata'})
     time = soup.find_all('span',{'class':'gmod-list-time'})
+    newtitles = 0
     for i in range(len(title)):
         title_s = title[i].string
         artist_s = '!' + artist[i].string
         if title_s not in prev_t:
             send_to_dict(title_s,titles)
             send_to_dict(artist_s.replace('!by ','').replace('!',''),artists)
+            newtitles +=1
     prev_t = []
     for titl in title:
         prev_t.append(titl.string)
+
+    def SortByCount(Dict):
+        Ordered = sorted(Dict.items(), key = lambda t:t[1], reverse=True)
+        return Ordered
+
+    OrderedT = SortByCount(titles)
+    OrderedA = SortByCount(artists)
     
     titlefile = open('Titles.txt','w')
-    for song in titles:
-        line = '%s : %s\n'%(str(song),str(titles[song]))
+    for i in range(len(titles)):
+        line = '%s : %s\n'%(OrderedT[i][0],OrderedT[i][1])
         titlefile.write(line)
     titlefile.close()
     artistfile = open('Artists.txt','w')
-    for singer in artists:
-        line = '%s : %s\n'%(str(singer),str(artists[singer]))
+    for i in range(len(artists)):
+        line = '%s : %s\n'%(OrderedA[i][0],OrderedA[i][1])
         artistfile.write(line)
     artistfile.close()
-    print(len(titles))
-    print(titles)
-    sleep( 900 )
-    
+    print('last read at %s'%(datetime.now().strftime('%m-%d %H:%M:%S')))
+    print('%s titles added'%(newtitles))
+    print('Totals: %s songs, %s artists'%(len(titles),len(artists)))
+    sleep( 1800 )
