@@ -48,6 +48,6 @@ while True:
         artistfile.write(line)
     artistfile.close()
     print('last read at %s'%(datetime.now().strftime('%m-%d %H:%M:%S')))
-    print('%s titles added'%(newtitles))
+    print('%s titles read'%(newtitles))
     print('Totals: %s songs, %s artists'%(len(titles),len(artists)))
     sleep( 1800 )
